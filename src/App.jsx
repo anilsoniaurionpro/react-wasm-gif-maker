@@ -50,32 +50,33 @@ function App() {
     setGif(url);
   };
 
-  function startEncoding() {
+  async function startEncoding() {
     console.log('start encoding');
 
-       // Write the file to memory
-       ffmpeg.FS('writeFile', 'a.png', await fetchFile(imageData.images[10]));
-       ffmpeg.FS('writeFile', 'b.png', await fetchFile(imageData.images[20]));
+    // Write the file to memory
+    ffmpeg.FS('writeFile', 'a.png', await fetchFile(imageData.images[10]));
+    ffmpeg.FS('writeFile', 'b.png', await fetchFile(imageData.images[20]));
 
+    // Run the FFMpeg command
+    await ffmpeg.run(
+      '-i',
+      'a.png',
+      '-i',
+      'b.png',
+      ' -filter_complex',
+      'hstack',
+      'out.jpg',
+    );
 
-       // Run the FFMpeg command
-       await ffmpeg.run(
-         '-i',
-         'a.png',
-         '-i',
-         'b.png',
-        " -filter_complex", "hstack" ,"out.jpg"
-       );
-   
-       // Read the result
-       const data = ffmpeg.FS('readFile', 'out.png');
-   
-       // Create a URL
-       const url = URL.createObjectURL(
-         new Blob([data.buffer], { type: 'image/png' }),
-       );
-       console.log({url});
-       //setGif(url);
+    // Read the result
+    const data = ffmpeg.FS('readFile', 'out.png');
+
+    // Create a URL
+    const url = URL.createObjectURL(
+      new Blob([data.buffer], { type: 'image/png' }),
+    );
+    console.log({ url });
+    //setGif(url);
   }
 
   return ready ? (
