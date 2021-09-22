@@ -73,7 +73,7 @@ function App() {
     );
 
     // Read the result
-    const data = ffmpeg.FS('readFile', 'out.png');
+    const data = ffmpeg.FS('readFile', 'output.mp4');
 
     // Create a URL
     const url = URL.createObjectURL(
