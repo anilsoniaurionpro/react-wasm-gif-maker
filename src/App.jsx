@@ -12,6 +12,7 @@ console.log(imageData.images.length);
 function App() {
   const [ready, setReady] = useState(false);
   const [video, setVideo] = useState();
+  const [output, setOutput] = useState();
   const [gif, setGif] = useState();
 
   const load = async () => {
@@ -62,18 +63,26 @@ function App() {
       );
     });
 
+    imageData.images.forEach(async (image, i) => {
+      ffmpeg.FS(
+        'writeFile',
+        `img${String(i + 26).padStart(3, '0')}.png`,
+        await fetchFile(image),
+      );
+    });
+
     // Run the FFMpeg command
-    await ffmpeg.run('-framerate', '24', '-i', 'img%03d.png', 'output.mp4');
+    await ffmpeg.run('-framerate', '30', '-i', 'img%03d.png', 'output.mp4');
 
     // Read the result
     const data = ffmpeg.FS('readFile', 'output.mp4');
 
     // Create a URL
     const url = URL.createObjectURL(
-      new Blob([data.buffer], { type: 'image/mp4' }),
+      new Blob([data.buffer], { type: 'video/mp4' }),
     );
     console.log({ url });
-    //setGif(url);
+    setOutput(url);
   }
 
   return ready ? (
@@ -91,6 +100,8 @@ function App() {
       {gif && <img src={gif} width="250" />}
 
       <button onClick={startEncoding}>start encoding</button>
+
+      {output && <video controls width="250" src={output}></video>}
     </div>
   ) : (
     <p>Loading...</p>
