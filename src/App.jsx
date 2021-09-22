@@ -58,7 +58,7 @@ function App() {
       imageData.images.forEach(async (image, i) => {
         ffmpeg.FS(
           'writeFile',
-          `img${String(i + 61 * m).padStart(4, '0')}.png`,
+          `img${String(i + 26 * m).padStart(4, '0')}.png`,
           await fetchFile(image),
         );
       });
