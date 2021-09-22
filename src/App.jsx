@@ -54,7 +54,7 @@ function App() {
   async function startEncoding() {
     console.log('start encoding');
 
-    [0, 1].forEach((m) => {
+    [0, 1, 2, 3, 4, 5, 6, 7].forEach((m) => {
       imageData.images.forEach(async (image, i) => {
         ffmpeg.FS(
           'writeFile',
@@ -64,13 +64,7 @@ function App() {
       });
     });
 
-    ffmpeg.FS(
-      'writeFile',
-      `audio.mp3`,
-      await fetchFile(
-        'https://cdn.hootout.com/behtarads/music/mixkit-fun-times-7-%5BAudioTrimmer.com%5D.aac',
-      ),
-    );
+    ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
 
     // Run the FFMpeg command
     await ffmpeg.run(
@@ -79,7 +73,7 @@ function App() {
       '-i',
       'img%04d.png',
       '-i',
-      'audio.mp3',
+      'audio.aac',
       'output.mp4',
     );
 
