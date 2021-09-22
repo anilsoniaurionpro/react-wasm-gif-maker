@@ -64,13 +64,7 @@ function App() {
       });
     });
 
-    ffmpeg.FS(
-      'writeFile',
-      `audio.mp3`,
-      await fetchFile(
-        'https://cdn.hootout.com/behtarads/music/mixkit-fun-times-7-%5BAudioTrimmer.com%5D.aac',
-      ),
-    );
+    ffmpeg.FS('writeFile', `audio.mp3`, await fetchFile('audio.aac'));
 
     // Run the FFMpeg command
     await ffmpeg.run(
