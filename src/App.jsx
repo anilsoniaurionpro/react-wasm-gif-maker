@@ -54,11 +54,11 @@ function App() {
   async function startEncoding() {
     console.log('start encoding');
 
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach((m) => {
+    [0, 1].forEach((m) => {
       imageData.images.forEach(async (image, i) => {
         ffmpeg.FS(
           'writeFile',
-          `img${String(i + 26 * m).padStart(4, '0')}.png`,
+          `img${String(i + 61 * m).padStart(4, '0')}.png`,
           await fetchFile(image),
         );
       });
