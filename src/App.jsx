@@ -63,14 +63,7 @@ function App() {
     });
 
     // Run the FFMpeg command
-    await ffmpeg.run(
-      '-i',
-      '-framerate',
-      '24',
-      '-i',
-      'img%03d.png',
-      'output.mp4',
-    );
+    await ffmpeg.run('-framerate', '24', '-i', 'img%03d.png', 'output.mp4');
 
     // Read the result
     const data = ffmpeg.FS('readFile', 'output.mp4');
