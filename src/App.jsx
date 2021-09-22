@@ -70,7 +70,7 @@ function App() {
 
     // Create a URL
     const url = URL.createObjectURL(
-      new Blob([data.buffer], { type: 'image/png' }),
+      new Blob([data.buffer], { type: 'image/mp4' }),
     );
     console.log({ url });
     //setGif(url);
