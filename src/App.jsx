@@ -54,21 +54,14 @@ function App() {
   async function startEncoding() {
     console.log('start encoding');
 
-    // Write the file to memory
-    imageData.images.forEach(async (image, i) => {
-      ffmpeg.FS(
-        'writeFile',
-        `img${String(i).padStart(3, '0')}.png`,
-        await fetchFile(image),
-      );
-    });
-
-    imageData.images.forEach(async (image, i) => {
-      ffmpeg.FS(
-        'writeFile',
-        `img${String(i + 26).padStart(3, '0')}.png`,
-        await fetchFile(image),
-      );
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach((m) => {
+      imageData.images.forEach(async (image, i) => {
+        ffmpeg.FS(
+          'writeFile',
+          `img${String(i + 26 * m).padStart(4, '0')}.png`,
+          await fetchFile(image),
+        );
+      });
     });
 
     ffmpeg.FS('writeFile', `audio.mp3`, await fetchFile('audio.mp3'));
@@ -78,7 +71,7 @@ function App() {
       '-framerate',
       '30',
       '-i',
-      'img%03d.png',
+      'img%04d.png',
       '-i',
       'audio.mp3',
       'output.mp4',
