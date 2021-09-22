@@ -54,14 +54,18 @@ function App() {
     console.log('start encoding');
 
     // Write the file to memory
-    imageData.images.forEach((image, i) => {
+    imageData.images.forEach(async (image, i) => {
       ffmpeg.FS('writeFile', `img_0${i}.png`, await fetchFile(image));
-    })
+    });
 
     // Run the FFMpeg command
     await ffmpeg.run(
       '-i',
-      "-framerate" ,"24" ,"-i" ,"img%01d.png" ,"output.mp4"
+      '-framerate',
+      '24',
+      '-i',
+      'img%01d.png',
+      'output.mp4',
     );
 
     // Read the result
