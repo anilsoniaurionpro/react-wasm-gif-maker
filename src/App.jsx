@@ -54,18 +54,14 @@ function App() {
     console.log('start encoding');
 
     // Write the file to memory
-    ffmpeg.FS('writeFile', 'a.png', await fetchFile(imageData.images[10]));
-    ffmpeg.FS('writeFile', 'b.png', await fetchFile(imageData.images[20]));
+    imageData.images.forEach((image, i) => {
+      ffmpeg.FS('writeFile', `img_0${i}.png`, await fetchFile(image));
+    })
 
     // Run the FFMpeg command
     await ffmpeg.run(
       '-i',
-      'a.png',
-      '-i',
-      'b.png',
-      ' -filter_complex',
-      'hstack',
-      'out.png',
+      "-framerate" ,"24" ,"-i" ,"img%01d.png" ,"output.mp4"
     );
 
     // Read the result
