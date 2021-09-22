@@ -65,7 +65,7 @@ function App() {
       'b.png',
       ' -filter_complex',
       'hstack',
-      'out.jpg',
+      'out.png',
     );
 
     // Read the result
