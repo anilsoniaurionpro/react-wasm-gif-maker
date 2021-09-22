@@ -71,8 +71,18 @@ function App() {
       );
     });
 
+    ffmpeg.FS('writeFile', `audio.mp3`, await fetchFile('audio.mp3'));
+
     // Run the FFMpeg command
-    await ffmpeg.run('-framerate', '30', '-i', 'img%03d.png', 'output.mp4');
+    await ffmpeg.run(
+      '-framerate',
+      '30',
+      '-i',
+      'img%03d.png',
+      '-i',
+      'audio.mp3',
+      'output.mp4',
+    );
 
     // Read the result
     const data = ffmpeg.FS('readFile', 'output.mp4');
