@@ -55,7 +55,11 @@ function App() {
 
     // Write the file to memory
     imageData.images.forEach(async (image, i) => {
-      ffmpeg.FS('writeFile', `img_0${i}.png`, await fetchFile(image));
+      ffmpeg.FS(
+        'writeFile',
+        `img${String(i).padStart(3, '0')}.png`,
+        await fetchFile(image),
+      );
     });
 
     // Run the FFMpeg command
@@ -64,7 +68,7 @@ function App() {
       '-framerate',
       '24',
       '-i',
-      'img%01d.png',
+      'img%03d.png',
       'output.mp4',
     );
 
