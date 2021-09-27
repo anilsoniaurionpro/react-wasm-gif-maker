@@ -68,7 +68,7 @@ function App() {
     });
     // });
 
-    music && ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
+    //  music && ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
 
     // Run the FFMpeg command
     await ffmpeg.run(
@@ -77,7 +77,7 @@ function App() {
       '-i',
       'img%04d.png',
       '-i',
-      music ? 'audio.aac' : '',
+      'audio.aac',
       'output.mp4',
     );
 
