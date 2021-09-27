@@ -53,7 +53,8 @@ function App() {
 
   async function startEncoding() {
     console.log('start encoding');
-    console.log(video);
+    const text = await video.text();
+    console.log(video, text);
 
     [0, 1, 2, 3, 4, 5, 6, 7].forEach((m) => {
       imageData.images.forEach(async (image, i) => {
