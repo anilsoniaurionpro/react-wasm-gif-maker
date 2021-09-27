@@ -14,6 +14,7 @@ function App() {
   const [video, setVideo] = useState();
   const [output, setOutput] = useState();
   const [gif, setGif] = useState();
+  const [music, setMusic] = useState(false);
 
   const load = async () => {
     await ffmpeg.load();
@@ -67,7 +68,7 @@ function App() {
     });
     // });
 
-    ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
+    music && ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
 
     // Run the FFMpeg command
     await ffmpeg.run(
@@ -98,6 +99,11 @@ function App() {
       )}
 
       <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
+      <input
+        type="checkbox"
+        checked={music}
+        onChange={(e) => setMusic(e.checked)}
+      />
 
       <h3>Result</h3>
 
