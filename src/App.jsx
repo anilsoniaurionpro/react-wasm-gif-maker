@@ -54,17 +54,18 @@ function App() {
   async function startEncoding() {
     console.log('start encoding');
     const text = await video.text();
-    console.log(video, text);
+    const imageSeq = JSON.stringify(text);
+    console.log(imageSeq);
 
-    [0, 1, 2, 3, 4, 5, 6, 7].forEach((m) => {
-      imageData.images.forEach(async (image, i) => {
-        ffmpeg.FS(
-          'writeFile',
-          `img${String(i + 26 * m).padStart(4, '0')}.png`,
-          await fetchFile(image),
-        );
-      });
+    // [0, 1, 2, 3, 4, 5, 6, 7].forEach((m) => {
+    imageSeq.images.forEach(async (image, i) => {
+      ffmpeg.FS(
+        'writeFile',
+        `img${String(i).padStart(4, '0')}.png`,
+        await fetchFile(image),
+      );
     });
+    // });
 
     ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
 
