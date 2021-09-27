@@ -53,6 +53,7 @@ function App() {
 
   async function startEncoding() {
     console.log('start encoding');
+    console.log(video);
 
     [0, 1, 2, 3, 4, 5, 6, 7].forEach((m) => {
       imageData.images.forEach(async (image, i) => {
@@ -90,7 +91,7 @@ function App() {
 
   return ready ? (
     <div className="App">
-      {video && (
+      {video && false && (
         <video controls width="250" src={URL.createObjectURL(video)}></video>
       )}
 
