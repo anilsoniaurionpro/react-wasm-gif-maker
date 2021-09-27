@@ -76,7 +76,7 @@ function App() {
       '30',
       '-i',
       'img%04d.png',
-      '-i',
+      // '-i',
       // 'audio.aac',
       'output.mp4',
     );
