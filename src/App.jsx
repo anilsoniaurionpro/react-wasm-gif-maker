@@ -54,7 +54,7 @@ function App() {
   async function startEncoding() {
     console.log('start encoding');
     const text = await video.text();
-    const imageSeq = JSON.stringify(text);
+    const imageSeq = JSON.parse(text);
     console.log(imageSeq);
 
     // [0, 1, 2, 3, 4, 5, 6, 7].forEach((m) => {
