@@ -142,6 +142,7 @@ function App() {
       '30',
       '-i',
       'img%05d.png',
+      '-i',
       'audio.aac',
       'output.mp4',
     );
