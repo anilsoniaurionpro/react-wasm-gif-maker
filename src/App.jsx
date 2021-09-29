@@ -189,11 +189,11 @@ function App() {
       <h2>2. Pick quality</h2>
       <select
         disabled={processing}
-        value={path}
+        value={quality}
         onChange={(e) => setQuality(e.target.value)}
       >
         {Object.keys(QUALITY).map((item) => (
-          <option value={item.name}>{item.name}</option>
+          <option value={item}>{item}</option>
         ))}
       </select>
       <br />
