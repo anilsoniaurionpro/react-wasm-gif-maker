@@ -194,7 +194,7 @@ function App() {
       <br />
       <hr />
 
-      <h2>2. Pick quality</h2>
+      <h1>2. Pick quality</h1>
       <select
         disabled={processing}
         value={quality}
@@ -207,9 +207,10 @@ function App() {
       <br />
       <hr />
 
-      <button onClick={startEncoding}>
+      <button onClick={startEncoding} disabled={path && !processing}>
         {processing ? 'Encoding ...' : 'Start'}
       </button>
+      <code>{processing && 'Open console to see progress'}</code>
 
       {output && <video controls width="250" src={output}></video>}
     </div>
