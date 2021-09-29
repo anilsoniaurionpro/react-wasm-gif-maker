@@ -9,12 +9,50 @@ const ffmpeg = createFFmpeg({
 });
 console.log(imageData.images.length);
 
+const URLS = [
+  {
+    name: 'blue slides',
+    path: 'https://assets1.lottiefiles.com/packages/lf20_bjf6kwgv.json',
+  },
+  {
+    name: 'glass',
+    path: 'https://assets2.lottiefiles.com/packages/lf20_tyl9s8rw.json',
+  },
+  {
+    name: 'line art',
+    path: 'https://assets5.lottiefiles.com/packages/lf20_rdtdoam2.json',
+  },
+];
+
+const QUALITY = {
+  LOW: 'LOW',
+  MID: 'MID',
+  HIGH: 'HIGH',
+};
+
+function getDimension(quality) {
+  switch (quality) {
+    case QUALITY.LOW:
+      return { width: 480, height: 852 };
+
+    case QUALITY.LOW:
+      return { width: 720, height: 1280 };
+
+    case QUALITY.LOW:
+      return { width: 1080, height: 1920 };
+
+    default:
+      return { width: 480, height: 852 };
+  }
+}
+
 function App() {
   const [ready, setReady] = useState(false);
-  const [video, setVideo] = useState();
   const [output, setOutput] = useState();
-  const [gif, setGif] = useState();
-  const [music, setMusic] = useState(false);
+  const [images, setImages] = useState([]);
+  const [path, setPath] = useState(URLS[0].path);
+  const [quality, setQuality] = useState(QUALITY.LOW);
+  const [processing, setProcessing] = useState(false);
 
   const load = async () => {
     await ffmpeg.load();
@@ -25,48 +63,75 @@ function App() {
     load();
   }, []);
 
-  const convertToGif = async () => {
-    // Write the file to memory
-    ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(video));
+  function getImages(path) {
+    return new Promise((resolve, reject) => {
+      var canvas = document.createElement('canvas');
+      const { width, height } = getDimension(quality);
+      canvas.width = width;
+      canvas.height = height;
 
-    // Run the FFMpeg command
-    await ffmpeg.run(
-      '-i',
-      'test.mp4',
-      '-t',
-      '2.5',
-      '-ss',
-      '2.0',
-      '-f',
-      'gif',
-      'out.gif',
-    );
+      var ctx = canvas.getContext('2d');
+      var images = [];
 
-    // Read the result
-    const data = ffmpeg.FS('readFile', 'out.gif');
+      var animation = lottie.loadAnimation({
+        renderer: 'canvas',
+        loop: false,
+        autoplay: true,
+        path: path,
+        rendererSettings: {
+          context: ctx, // the canvas context
+          // scaleMode: "scale",
+          clearCanvas: true,
+          progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
+          hideOnTransparent: true, //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)
+        },
+      });
+      // return;
+      // animation.setSpeed(0.5);
+      // animation.setSubframe(false);
 
-    // Create a URL
-    const url = URL.createObjectURL(
-      new Blob([data.buffer], { type: 'image/gif' }),
-    );
-    setGif(url);
-  };
+      // animation.addEventListener('enterFrame', function captureFrame(e) {
+      //   console.log('ef');
+      //   // images.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      // });
+
+      // animation.addEventListener('complete', function captureFrame() {
+      //   console.log('completed', images.length);
+      //   resolve(images);
+      // });
+
+      animation.addEventListener('data_ready', function captureFrame() {
+        animation.play();
+        setTimeout(() => {
+          run();
+        }, 3000);
+      });
+
+      function run() {
+        const totalFrames = animation.getDuration(true);
+        for (let index = 0; index < totalFrames; index++) {
+          animation.goToAndStop(index, true);
+          images.push(canvas.toDataURL());
+          console.log('capture');
+        }
+        console.log('completed capturing', images.length);
+        resolve(images);
+      }
+    });
+  }
 
   async function startEncoding() {
-    console.log('start encoding');
-    const text = await video.text();
-    const imageSeq = JSON.parse(text);
-    console.log(imageSeq);
+    setProcessing(true);
+    const imageSeq = await getImages(path);
 
-    // [0, 1, 2, 3, 4, 5, 6, 7].forEach((m) => {
-    imageSeq.images.forEach(async (image, i) => {
+    console.log('start encoding');
+    imageSeq.forEach(async (image, i) => {
       ffmpeg.FS(
         'writeFile',
-        `img${String(i).padStart(4, '0')}.png`,
+        `img${String(i).padStart(5, '0')}.png`,
         await fetchFile(image),
       );
     });
-    // });
 
     //  music && ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
 
@@ -75,7 +140,7 @@ function App() {
       '-framerate',
       '30',
       '-i',
-      'img%04d.png',
+      'img%05d.png',
       // '-i',
       // 'audio.aac',
       'output.mp4',
@@ -89,34 +154,59 @@ function App() {
       new Blob([data.buffer], { type: 'video/mp4' }),
     );
     console.log({ url });
+    // imageSeq.forEach(async (image, i) => {
+    //   ffmpeg.FS('unLink', `img${String(i).padStart(5, '0')}.png`);
+    // });
+    // ffmpeg.FS('unLink', `output.mp4`);
     setOutput(url);
+    setProcessing(false);
   }
 
   return ready ? (
     <div className="App">
-      {video && false && (
-        <video controls width="250" src={URL.createObjectURL(video)}></video>
-      )}
-
-      <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
+      <h1>1. Pick lottie animation</h1>
+      <h2>Type lottie url</h2>
       <input
-        type="checkbox"
-        checked={music}
-        onChange={(e) => setMusic(e.checked)}
+        disabled={processing}
+        type="text"
+        value={path}
+        onChange={(e) => setPath(e.target.value)}
       />
+      <br />
+      <h2>Or, select predefined ones</h2>
+      <select
+        disabled={processing}
+        value={path}
+        onChange={(e) => setPath(e.target.value)}
+      >
+        {URLS.map((item) => (
+          <option value={item.path}>{item.name}</option>
+        ))}
+      </select>
+      <br />
+      <hr />
 
-      <h3>Result</h3>
+      <h2>2. Pick quality</h2>
+      <select
+        disabled={processing}
+        value={path}
+        onChange={(e) => setQuality(e.target.value)}
+      >
+        {Object.keys(QUALITY).map((item) => (
+          <option value={item.name}>{item.name}</option>
+        ))}
+      </select>
+      <br />
+      <hr />
 
-      <button onClick={convertToGif}>Convert</button>
-
-      {gif && <img src={gif} width="250" />}
-
-      <button onClick={startEncoding}>start encoding</button>
+      <button onClick={startEncoding} disabled={!path || !processing}>
+        {processing ? 'Encoding ...' : 'Start'}
+      </button>
 
       {output && <video controls width="250" src={output}></video>}
     </div>
   ) : (
-    <p>Loading...</p>
+    <p>Loading ffmpeg wasm...</p>
   );
 }
 
