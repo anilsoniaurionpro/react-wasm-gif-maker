@@ -1,4 +1,5 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import Lottie from 'lottie-web';
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import imageData from './images.json';
@@ -73,7 +74,7 @@ function App() {
       var ctx = canvas.getContext('2d');
       var images = [];
 
-      var animation = lottie.loadAnimation({
+      var animation = Lottie.loadAnimation({
         renderer: 'canvas',
         loop: false,
         autoplay: true,
