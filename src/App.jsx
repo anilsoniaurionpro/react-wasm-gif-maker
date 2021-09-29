@@ -199,7 +199,7 @@ function App() {
       <br />
       <hr />
 
-      <button onClick={startEncoding} disabled={!path || !processing}>
+      <button onClick={startEncoding}>
         {processing ? 'Encoding ...' : 'Start'}
       </button>
 
