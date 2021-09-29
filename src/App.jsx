@@ -162,10 +162,10 @@ function App() {
       new Blob([data.buffer], { type: 'video/mp4' }),
     );
     console.log({ url });
-    // imageSeq.forEach(async (image, i) => {
-    //   ffmpeg.FS('unLink', `img${String(i).padStart(5, '0')}.png`);
-    // });
-    // ffmpeg.FS('unLink', `output.mp4`);
+    imageSeq.forEach(async (image, i) => {
+      ffmpeg.FS('unLink', `/img${String(i).padStart(5, '0')}.png`);
+    });
+    ffmpeg.FS('unLink', `/output.mp4`);
     setOutput(url);
     setProcessing(false);
   }
