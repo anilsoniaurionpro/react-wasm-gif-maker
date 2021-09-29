@@ -214,7 +214,9 @@ function App() {
       </button>
       <code>{processing && 'Open console to see progress'}</code>
 
-      {output && <video controls width="250" src={output}></video>}
+      {output && !processing && (
+        <video controls width="250" src={output}></video>
+      )}
     </div>
   ) : (
     <p>Loading ffmpeg wasm...</p>
