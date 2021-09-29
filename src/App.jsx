@@ -123,8 +123,11 @@ function App() {
 
   async function startEncoding() {
     setProcessing(true);
+    console.time('capturing');
     const imageSeq = await getImages(path);
+    console.timeEnd('capturing');
 
+    console.time('writing');
     console.log('start encoding');
     imageSeq.forEach(async (image, i) => {
       ffmpeg.FS(
@@ -135,8 +138,11 @@ function App() {
     });
 
     ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
+    console.timeEnd('writing');
 
     // Run the FFMpeg command
+    console.time('encoding');
+
     await ffmpeg.run(
       '-framerate',
       '30',
@@ -146,6 +152,7 @@ function App() {
       'audio.aac',
       'output.mp4',
     );
+    console.timeEnd('encoding');
 
     // Read the result
     const data = ffmpeg.FS('readFile', 'output.mp4');
@@ -155,10 +162,10 @@ function App() {
       new Blob([data.buffer], { type: 'video/mp4' }),
     );
     console.log({ url });
-    imageSeq.forEach(async (image, i) => {
-      ffmpeg.FS('unLink', `img${String(i).padStart(5, '0')}.png`);
-    });
-    ffmpeg.FS('unLink', `output.mp4`);
+    // imageSeq.forEach(async (image, i) => {
+    //   ffmpeg.FS('unLink', `img${String(i).padStart(5, '0')}.png`);
+    // });
+    // ffmpeg.FS('unLink', `output.mp4`);
     setOutput(url);
     setProcessing(false);
   }
