@@ -126,6 +126,7 @@ function App() {
     console.time('capturing');
     const imageSeq = await getImages(path);
     console.timeEnd('capturing');
+    output && URL.revokeObjectURL(output);
 
     console.time('writing');
     console.log('start encoding');
