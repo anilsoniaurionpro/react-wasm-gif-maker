@@ -166,13 +166,14 @@ function App() {
     const url = URL.createObjectURL(
       new Blob([data.buffer], { type: 'video/mp4' }),
     );
+
+    setOutput(url);
+    setProcessing(false);
     console.log({ url });
     imageSeq.forEach(async (image, i) => {
       ffmpeg.FS('unlink', `img${String(i).padStart(5, '0')}.png`);
     });
     ffmpeg.FS('unlink', `output.mp4`);
-    setOutput(url);
-    setProcessing(false);
     console.timeEnd('process');
   }
 
