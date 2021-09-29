@@ -116,6 +116,7 @@ function App() {
           console.log('capture');
         }
         console.log('completed capturing', images.length);
+        animation.destroy();
         resolve(images);
       }
     });
