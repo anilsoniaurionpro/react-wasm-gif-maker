@@ -54,6 +54,7 @@ function App() {
   const [path, setPath] = useState(URLS[0].path);
   const [quality, setQuality] = useState(QUALITY.LOW);
   const [processing, setProcessing] = useState(false);
+  const [fps, setFps] = useState('30');
 
   const load = async () => {
     await ffmpeg.load();
@@ -123,6 +124,7 @@ function App() {
   }
 
   async function startEncoding() {
+    console.time('process');
     setProcessing(true);
     console.time('capturing');
     const imageSeq = await getImages(path);
@@ -140,7 +142,7 @@ function App() {
       );
     });
 
-    ffmpeg.FS('writeFile', `audio.aac`, await fetchFile('audio.aac'));
+    ffmpeg.FS('writeFile', `audio10.mp3`, await fetchFile('audio10.mp3'));
     console.timeEnd('writing');
 
     // Run the FFMpeg command
@@ -148,11 +150,11 @@ function App() {
 
     await ffmpeg.run(
       '-framerate',
-      '30',
+      fps,
       '-i',
       'img%05d.png',
       '-i',
-      'audio.aac',
+      'audio10.mp3',
       'output.mp4',
     );
     console.timeEnd('encoding');
@@ -171,6 +173,7 @@ function App() {
     ffmpeg.FS('unlink', `output.mp4`);
     setOutput(url);
     setProcessing(false);
+    console.timeEnd('process');
   }
 
   return ready ? (
@@ -210,13 +213,26 @@ function App() {
       <br />
       <hr />
 
+      <h1>3. FPS</h1>
+      <select
+        disabled={processing}
+        value={fps}
+        onChange={(e) => setFps(e.target.value)}
+      >
+        {['30', '27', '25', '22', '20'].map((item) => (
+          <option value={item}>{item}</option>
+        ))}
+      </select>
+      <br />
+      <hr />
+
       <button onClick={startEncoding} disabled={!path || processing}>
         {processing ? 'Encoding ...' : 'Start'}
       </button>
       <code>{processing && 'Open console to see progress'}</code>
 
       {output && !processing && (
-        <video controls width="250" src={output}></video>
+        <video controls autoPlay width="250" src={output}></video>
       )}
     </div>
   ) : (
