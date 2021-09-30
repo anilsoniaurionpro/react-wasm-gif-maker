@@ -153,10 +153,6 @@ function App() {
     await ffmpeg.run(
       '-framerate',
       fps,
-      'c:v',
-      'libx264',
-      '-preset',
-      'slow',
       '-i',
       'img%05d.png',
       '-i',
