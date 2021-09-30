@@ -153,14 +153,14 @@ function App() {
     await ffmpeg.run(
       '-framerate',
       fps,
-      '-i',
-      'img%05d.png',
-      '-i',
-      'audio10.mp3',
       'c:v',
       'libx264',
       '-preset',
       'slow',
+      '-i',
+      'img%05d.png',
+      '-i',
+      'audio10.mp3',
       'output.mp4',
     );
     console.timeEnd('encoding');
