@@ -180,6 +180,8 @@ function App() {
       ffmpeg.FS('unlink', `img${String(i).padStart(5, '0')}.png`);
     });
     ffmpeg.FS('unlink', `output.mp4`);
+    ffmpeg.FS('unlink', `audio10.mp3`);
+
     console.timeEnd('process');
   }
 
