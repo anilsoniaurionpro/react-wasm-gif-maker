@@ -155,6 +155,7 @@ function App() {
       'img%05d.png',
       '-i',
       'audio10.mp3',
+      '-preset faster',
       'output.mp4',
     );
     console.timeEnd('encoding');
