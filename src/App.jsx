@@ -235,6 +235,7 @@ function App() {
         {processing ? 'Encoding ...' : 'Start'}
       </button>
       <code>{processing && 'Open console to see progress'}</code>
+      {processing && <img src="./loading.svg" alt="loading" />}
 
       {output && !processing && (
         <video controls autoPlay width="250" src={output}></video>
