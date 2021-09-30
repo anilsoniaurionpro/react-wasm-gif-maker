@@ -148,6 +148,8 @@ function App() {
     // Run the FFMpeg command
     console.time('encoding');
 
+    await ffmpeg.run('-h', 'full');
+
     await ffmpeg.run(
       '-framerate',
       fps,
@@ -155,7 +157,6 @@ function App() {
       'img%05d.png',
       '-i',
       'audio10.mp3',
-      '-preset faster',
       'output.mp4',
     );
     console.timeEnd('encoding');
