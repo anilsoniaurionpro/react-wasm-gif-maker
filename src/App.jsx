@@ -242,7 +242,9 @@ function App() {
       )}
     </div>
   ) : (
-    <p>Loading ffmpeg wasm...</p>
+    <p>
+      <img src="https://wd.imgix.net/image/CZmpGM8Eo1dFe0KNhEO9SGO8Ok23/tWnZEOnNmBeFcZxuR9Dx.jpg?auto=format&w=964" alt="banner" />
+      Loading ffmpeg wasm...</p>
   );
 }
 
