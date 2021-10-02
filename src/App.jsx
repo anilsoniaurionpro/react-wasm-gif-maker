@@ -243,7 +243,7 @@ function App() {
     </div>
   ) : (
     <p>
-      <img src="https://wd.imgix.net/image/CZmpGM8Eo1dFe0KNhEO9SGO8Ok23/tWnZEOnNmBeFcZxuR9Dx.jpg?auto=format&w=964" alt="banner" />
+      <img src="https://cdn.shopify.com/s/files/1/0602/5019/4096/products/girl-mobile1.png?v=1632901378" alt="banner" />
       Loading ffmpeg wasm...</p>
   );
 }
