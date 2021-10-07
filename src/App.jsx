@@ -181,7 +181,7 @@ function App() {
     const url = URL.createObjectURL(
       new Blob([data.buffer], { type: 'video/mp4' }),
     );
-
+    console.timeEnd('process');
     setOutput(url);
     setProcessing(false);
     console.log({ url });
@@ -191,7 +191,6 @@ function App() {
     ffmpeg.FS('unlink', `output.mp4`);
     ffmpeg.FS('unlink', `audio10.mp3`);
 
-    console.timeEnd('process');
   }
 
   return ready ? (
