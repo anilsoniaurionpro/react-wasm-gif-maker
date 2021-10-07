@@ -161,7 +161,7 @@ function App() {
     // );
 
     await ffmpeg.run(
-      '-framerate',
+      '-r',
       fps,
       '-i',
       'img%05d.png',
