@@ -150,6 +150,16 @@ function App() {
 
     // await ffmpeg.run('-h', 'full');
 
+    // await ffmpeg.run(
+    //   '-framerate',
+    //   fps,
+    //   '-i',
+    //   'img%05d.png',
+    //   '-i',
+    //   'audio10.mp3',
+    //   'output.mp4',
+    // );
+
     await ffmpeg.run(
       '-framerate',
       fps,
@@ -157,6 +167,7 @@ function App() {
       'img%05d.png',
       '-i',
       'audio10.mp3',
+      "-c:v", "libx264",
       'output.mp4',
     );
     console.timeEnd('encoding');
@@ -243,9 +254,9 @@ function App() {
     </div>
   ) : (
     <p>
-     
-     <img src="https://wd.imgix.net/image/CZmpGM8Eo1dFe0KNhEO9SGO8Ok23/tWnZEOnNmBeFcZxuR9Dx.jpg?auto=format&w=964" alt="banner" />
-        <img src="https://cdn.shopify.com/s/files/1/0602/5019/4096/products/hlaf.jpg" crossorigin alt="banner" />
+
+      <img src="https://wd.imgix.net/image/CZmpGM8Eo1dFe0KNhEO9SGO8Ok23/tWnZEOnNmBeFcZxuR9Dx.jpg?auto=format&w=964" alt="banner" />
+      <img src="https://cdn.shopify.com/s/files/1/0602/5019/4096/products/hlaf.jpg" crossorigin alt="banner" />
 
       Loading ffmpeg wasm...</p>
   );
