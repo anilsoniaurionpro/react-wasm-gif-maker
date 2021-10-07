@@ -168,6 +168,7 @@ function App() {
       '-i',
       'audio10.mp3',
       "-c:v", "libx264",
+      "-preset", "superfast",
       'output.mp4',
     );
     console.timeEnd('encoding');
