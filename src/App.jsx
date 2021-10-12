@@ -258,6 +258,7 @@ function App() {
 
       <img src="https://wd.imgix.net/image/CZmpGM8Eo1dFe0KNhEO9SGO8Ok23/tWnZEOnNmBeFcZxuR9Dx.jpg?auto=format&w=964" alt="banner" />
       <img src="https://cdn.shopify.com/s/files/1/0602/5019/4096/products/hlaf.jpg" crossorigin alt="banner" />
+      <img src="https://vidybackapi.herokuapp.com/proxy/https%3A%2F%2Fi.etsystatic.com%2F17095327%2Fr%2Fil%2F879610%2F2016510847%2Fil_fullxfull.2016510847_kn0j.jpg" crossorigin alt="proxy" />
 
       Loading ffmpeg wasm...</p>
   );
