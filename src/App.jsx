@@ -193,6 +193,12 @@ function App() {
 
   }
 
+  function upload() {
+    var fd = new FormData();
+    fd.append("uid","123");
+    fetch("localhost:3000/upload").then(res => console.log("uploaded")).catch(errro => console.error(error))
+  }
+
   return ready ? (
     <div className="App">
       <h1>1. Pick lottie animation</h1>
@@ -250,8 +256,12 @@ function App() {
       {processing && <img src="./loading.svg" alt="loading" />}
 
       {output && !processing && (
+        <>
         <video controls autoPlay width="250" src={output}></video>
+        <button onClick={upload}>upload</button>
+        </>
       )}
+      
     </div>
   ) : (
     <p>
