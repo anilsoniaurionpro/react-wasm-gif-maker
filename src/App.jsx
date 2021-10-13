@@ -198,7 +198,7 @@ function App() {
     fd.append("uid","123");
     fetch("localhost:3000/upload",{
       body : fd
-    }).then(res => console.log("uploaded")).catch(errro => console.error(error))
+    }).then(res => console.log("uploaded")).catch(error => console.error(error))
   }
 
   return ready ? (
