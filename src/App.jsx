@@ -197,6 +197,7 @@ function App() {
     var fd = new FormData();
     fd.append("uid","123");
     fetch("localhost:3000/upload",{
+      method : "POST",
       body : fd
     }).then(res => console.log("uploaded")).catch(error => console.error(error))
   }
