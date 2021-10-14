@@ -1,6 +1,7 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import localforage from 'localforage';
 import Lottie from 'lottie-web';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import imageData from './images.json';
 
@@ -9,6 +10,14 @@ const ffmpeg = createFFmpeg({
   corePath: 'static/js/ffmpeg-core.js',
 });
 console.log(imageData.images.length);
+localforage.config({
+  driver: localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
+  name: 'vidyback',
+  version: 1.0,
+  size: 4980736, // Size of database, in bytes. WebSQL-only for now.
+  storeName: 'vidyback', // Should be alphanumeric, with underscores.
+  description: 'asset storage for later processing',
+});
 
 const URLS = [
   {
@@ -22,6 +31,10 @@ const URLS = [
   {
     name: 'line art',
     path: 'https://assets5.lottiefiles.com/packages/lf20_rdtdoam2.json',
+  },
+  {
+    name: 'small',
+    path: 'https://assets1.lottiefiles.com/packages/lf20_6s59yx.json',
   },
 ];
 
@@ -51,10 +64,13 @@ function App() {
   const [ready, setReady] = useState(false);
   const [output, setOutput] = useState();
   const [images, setImages] = useState([]);
-  const [path, setPath] = useState(URLS[0].path);
+  const [path, setPath] = useState(URLS[3].path);
   const [quality, setQuality] = useState(QUALITY.LOW);
   const [processing, setProcessing] = useState(false);
   const [fps, setFps] = useState('30');
+  const ref = useRef();
+  const [cover, setCover] = useState('');
+  const [video, setVideo] = useState('');
 
   const load = async () => {
     await ffmpeg.load();
@@ -65,7 +81,13 @@ function App() {
     load();
   }, []);
 
-  function getImages(path) {
+  function updateText(i) {
+    if (ref.current) {
+      ref.current.innerHTML = i || 'ok';
+    }
+  }
+
+  function getImages(path, callback) {
     return new Promise((resolve, reject) => {
       var canvas = document.createElement('canvas');
       const { width, height } = getDimension(quality);
@@ -112,16 +134,19 @@ function App() {
       function run() {
         const totalFrames = animation.getDuration(true);
         for (let index = 0; index < totalFrames; index++) {
-         setTimeout(() => {
-          animation.goToAndStop(index, true);
-          images.push(canvas.toDataURL());
-          console.log('capture');
-         }, 0);
+          setTimeout(() => {
+            animation.goToAndStop(index, true);
+            images.push(canvas.toDataURL());
+            console.log('capture');
+          }, 0);
+          setTimeout(() => {
+            callback(index);
+          }, 0);
         }
         setTimeout(() => {
           console.log('completed capturing', images.length);
-        animation.destroy();
-        resolve(images);
+          animation.destroy();
+          resolve(images);
         }, 0);
       }
     });
@@ -131,7 +156,8 @@ function App() {
     console.time('process');
     setProcessing(true);
     console.time('capturing');
-    const imageSeq = await getImages(path);
+    const imageSeq = await getImages(path, updateText);
+
     console.timeEnd('capturing');
     output && URL.revokeObjectURL(output);
     setOutput('');
@@ -171,9 +197,12 @@ function App() {
       'img%05d.png',
       '-i',
       'audio10.mp3',
-      "-c:v", "libx264",
-      "-preset", "superfast",
-      "-crf", "25",
+      '-c:v',
+      'libx264',
+      '-preset',
+      'superfast',
+      '-crf',
+      '25',
       'output.mp4',
     );
     console.timeEnd('encoding');
@@ -182,9 +211,8 @@ function App() {
     const data = ffmpeg.FS('readFile', 'output.mp4');
 
     // Create a URL
-    const url = URL.createObjectURL(
-      new Blob([data.buffer], { type: 'video/mp4' }),
-    );
+    const blob = new Blob([data.buffer], { type: 'video/mp4' });
+    const url = URL.createObjectURL(blob);
     console.timeEnd('process');
     setOutput(url);
     setProcessing(false);
@@ -195,19 +223,43 @@ function App() {
     ffmpeg.FS('unlink', `output.mp4`);
     ffmpeg.FS('unlink', `audio10.mp3`);
 
+    await localforage.setItem('entry', {
+      image: imageSeq[5],
+      video: blob,
+      date: new Date().toISOString(),
+    });
+    console.log('added');
   }
 
   function upload() {
     var fd = new FormData();
-    fd.append("uid","123");
-    fetch("localhost:3000/upload",{
-      method : "POST",
-      body : fd
-    }).then(res => console.log("uploaded")).catch(error => console.error(error))
+    fd.append('uid', '123');
+    fetch('localhost:3000/upload', {
+      method: 'POST',
+      body: fd,
+    })
+      .then((res) => console.log('uploaded'))
+      .catch((error) => console.error(error));
+  }
+
+  async function loadCover() {
+    const keys = await localforage.keys();
+    console.log('loading cover', keys);
+    const record = await localforage.getItem('entry');
+    console.log(record);
+    record.image && setCover(record.image);
+    record.video && setVideo(record.video);
   }
 
   return ready ? (
     <div className="App">
+      {cover && video && (
+        <div>
+          <img src={cover} alt="cover" />
+          <video controls src={video} poster={cover}></video>
+        </div>
+      )}
+      <button onClick={loadCover}>load last saved video</button>
       <h1>1. Pick lottie animation</h1>
       <h2>Type lottie url</h2>
       <input
@@ -224,7 +276,9 @@ function App() {
         onChange={(e) => setPath(e.target.value)}
       >
         {URLS.map((item) => (
-          <option value={item.path}>{item.name}</option>
+          <option value={item.path} key={item.path}>
+            {item.name}
+          </option>
         ))}
       </select>
       <br />
@@ -237,7 +291,9 @@ function App() {
         onChange={(e) => setQuality(e.target.value)}
       >
         {Object.keys(QUALITY).map((item) => (
-          <option value={item}>{item}</option>
+          <option key={item} value={item}>
+            {item}
+          </option>
         ))}
       </select>
       <br />
@@ -250,7 +306,9 @@ function App() {
         onChange={(e) => setFps(e.target.value)}
       >
         {['30', '27', '25', '22', '20'].map((item) => (
-          <option value={item}>{item}</option>
+          <option value={item} key={item}>
+            {item}
+          </option>
         ))}
       </select>
       <br />
@@ -261,23 +319,31 @@ function App() {
       </button>
       <code>{processing && 'Open console to see progress'}</code>
       {processing && <img src="./loading.svg" alt="loading" />}
+      {processing && <p ref={ref}>text</p>}
 
       {output && !processing && (
         <>
-        <video controls autoPlay width="250" src={output}></video>
-        <button onClick={upload}>upload</button>
+          <video controls autoPlay width="250" src={output}></video>
+          <button onClick={upload}>upload</button>
         </>
       )}
-      
     </div>
   ) : (
     <p>
-
-      <img src="https://wd.imgix.net/image/CZmpGM8Eo1dFe0KNhEO9SGO8Ok23/tWnZEOnNmBeFcZxuR9Dx.jpg?auto=format&w=964" alt="banner" />
-      <img src="https://cdn.shopify.com/s/files/1/0602/5019/4096/products/hlaf.jpg" crossorigin alt="banner" />
-      <img src="https://vidybackapi.herokuapp.com/proxy/https%3A%2F%2Fi.etsystatic.com%2F17095327%2Fr%2Fil%2F879610%2F2016510847%2Fil_fullxfull.2016510847_kn0j.jpg" alt="proxy" />
-
-      Loading ffmpeg wasm...</p>
+      <img
+        src="https://wd.imgix.net/image/CZmpGM8Eo1dFe0KNhEO9SGO8Ok23/tWnZEOnNmBeFcZxuR9Dx.jpg?auto=format&w=964"
+        alt="banner"
+      />
+      <img
+        src="https://cdn.shopify.com/s/files/1/0602/5019/4096/products/hlaf.jpg"
+        alt="banner"
+      />
+      <img
+        src="https://vidybackapi.herokuapp.com/proxy/https%3A%2F%2Fi.etsystatic.com%2F17095327%2Fr%2Fil%2F879610%2F2016510847%2Fil_fullxfull.2016510847_kn0j.jpg"
+        alt="proxy"
+      />
+      Loading ffmpeg wasm...
+    </p>
   );
 }
 
