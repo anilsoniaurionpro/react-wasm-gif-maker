@@ -112,13 +112,17 @@ function App() {
       function run() {
         const totalFrames = animation.getDuration(true);
         for (let index = 0; index < totalFrames; index++) {
+         setTimeout(() => {
           animation.goToAndStop(index, true);
           images.push(canvas.toDataURL());
           console.log('capture');
+         }, 0);
         }
-        console.log('completed capturing', images.length);
+        setTimeout(() => {
+          console.log('completed capturing', images.length);
         animation.destroy();
         resolve(images);
+        }, 0);
       }
     });
   }
