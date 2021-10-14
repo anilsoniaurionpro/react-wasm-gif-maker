@@ -256,7 +256,7 @@ function App() {
       {cover && video && (
         <div>
           <img src={cover} alt="cover" />
-          <video controls src={video} poster={cover}></video>
+          <video controls src={URL.createObjectURL(video)} poster={cover}></video>
         </div>
       )}
       <button onClick={loadCover}>load last saved video</button>
