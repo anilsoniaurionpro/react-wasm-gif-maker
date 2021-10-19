@@ -19,7 +19,7 @@ localforage.config({
   description: 'asset storage for later processing',
 });
 
-function getFileExtenstionFromUrl(url: any) {
+function getFileExtenstionFromUrl(url) {
   const a = url.split(".");
   return a[a.length - 1];
 }
