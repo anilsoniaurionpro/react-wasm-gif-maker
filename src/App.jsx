@@ -19,6 +19,17 @@ localforage.config({
   description: 'asset storage for later processing',
 });
 
+function getFileExtenstionFromUrl(url: any) {
+  const a = url.split(".");
+  return a[a.length - 1];
+}
+
+export function toProxyUrl(url) {
+  const path =
+    "https://vidybackapi.herokuapp.com" + "/proxy/" + encodeURIComponent(url);
+  return path;
+}
+
 const URLS = [
   {
     name: 'blue slides',
@@ -172,7 +183,12 @@ function App() {
       );
     });
 
-    ffmpeg.FS('writeFile', `audio10.mp3`, await fetchFile('audio10.mp3'));
+    // ffmpeg.FS('writeFile', `audio10.mp3`, await fetchFile('audio10.mp3'));
+    var filename = "";
+    if (true) {
+      filename = "audio." + getFileExtenstionFromUrl("https://cdn.hootout.com/behtarads/music/vv-template-08-s-02.aac");
+      ffmpeg.FS("writeFile", filename, await fetchFile(toProxyUrl("https://cdn.hootout.com/behtarads/music/vv-template-08-s-02.aac")));
+    }
     console.timeEnd('writing');
 
     // Run the FFMpeg command
@@ -190,6 +206,24 @@ function App() {
     //   'output.mp4',
     // );
 
+    // await ffmpeg.run(
+    //   '-r',
+    //   fps,
+    //   '-i',
+    //   'img%05d.png',
+    //   "-ss" ,"0",
+    //   '-i',
+    //   'audio10.mp3',
+    //   "-t" , "" + (Math.floor(imageSeq.length / fps)),
+    //   '-c:v',
+    //   'libx264',
+    //   '-preset',
+    //   'superfast',
+    //   '-crf',
+    //   '25',
+    //   'output.mp4',
+    // );
+
     await ffmpeg.run(
       '-r',
       fps,
@@ -197,7 +231,7 @@ function App() {
       'img%05d.png',
       "-ss" ,"0",
       '-i',
-      'audio10.mp3',
+      filename,
       "-t" , "" + (Math.floor(imageSeq.length / fps)),
       '-c:v',
       'libx264',
