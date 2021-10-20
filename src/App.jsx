@@ -64,7 +64,7 @@ function getDimension(quality) {
       return { width: 720, height: 1280 };
 
     case QUALITY.HIGH:
-      return { width: 1080, height: 1920 };
+      return { width: 1080, height: 1080 };
 
     default:
       return { width: 480, height: 852 };
