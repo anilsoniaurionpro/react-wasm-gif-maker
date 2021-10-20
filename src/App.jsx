@@ -102,6 +102,7 @@ function App() {
     return new Promise((resolve, reject) => {
       var canvas = document.createElement('canvas');
       const { width, height } = getDimension(quality);
+      console.log({width,height});
       canvas.width = width;
       canvas.height = height;
 
