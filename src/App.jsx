@@ -60,10 +60,10 @@ function getDimension(quality) {
     case QUALITY.LOW:
       return { width: 480, height: 852 };
 
-    case QUALITY.LOW:
+    case QUALITY.MID:
       return { width: 720, height: 1280 };
 
-    case QUALITY.LOW:
+    case QUALITY.HIGH:
       return { width: 1080, height: 1920 };
 
     default:
@@ -258,7 +258,7 @@ function App() {
       ffmpeg.FS('unlink', `img${String(i).padStart(5, '0')}.png`);
     });
     ffmpeg.FS('unlink', `output.mp4`);
-    ffmpeg.FS('unlink', `audio10.mp3`);
+    ffmpeg.FS('unlink', filename);
 
     await localforage.setItem('entry', {
       image: imageSeq[5],
