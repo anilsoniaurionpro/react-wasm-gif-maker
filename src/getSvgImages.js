@@ -46,12 +46,8 @@ function _getSvgImages(path) {
   });
 }
 
-function drawSVG(svg, x, y, width, height) {
+function drawSVG(svg, ctx, x, y, width, height) {
   return new Promise((resolve, reject) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-
     const img = new Image();
     const serialized = new XMLSerializer().serializeToString(svg);
     const url = URL.createObjectURL(
@@ -59,8 +55,8 @@ function drawSVG(svg, x, y, width, height) {
     );
     img.onload = function () {
       console.log('d');
-      canvas.getContext('2d').drawImage(img, x, y, width, height);
-      resolve(canvas.toDataURL());
+      ctx.drawImage(img, x, y, width, height);
+      resolve(img);
     };
     img.src = url;
   });
@@ -78,17 +74,33 @@ export async function getSvgImages(path, width, height, callback) {
       canvas.height = height;
 
       const ctx = canvas.getContext('2d');
+      const images = [];
 
       let gid = null;
       let index = 0;
       // const { stop, recorder } = start(canvas.captureStream(30));
       // recorder.start();
 
-      const images = await Promise.all(
-        svgImages.map((svg, i) => drawSVG(svg, 0, 0, width, height)),
-      );
-      console.log('images', images);
-      resolve(images);
+      async function drawFrame() {
+        ctx.clearRect(0, 0, width, height);
+        await drawSVG(svgImages[index++], ctx, 0, 0, width, height);
+        if (index < svgImages.length) {
+          setTimeout(() => {
+            callback(index);
+          }, 0);
+          setTimeout(() => {
+            images.push(canvas.toDataURL());
+            gid = requestAnimationFrame(drawFrame);
+          }, 0);
+        } else {
+          setTimeout(() => {
+            cancelAnimationFrame(gid);
+            console.timeEnd('canvas');
+            resolve(images);
+          }, 0);
+        }
+      }
+      requestAnimationFrame(drawFrame);
     });
   });
 }
