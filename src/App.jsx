@@ -3,6 +3,7 @@ import localforage from 'localforage';
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { getImages } from './getImages';
+import { getSvgImages } from './getSvgImages';
 import imageData from './images.json';
 
 const ffmpeg = createFFmpeg({
@@ -109,7 +110,9 @@ function App() {
     setProcessing(true);
     console.time('capturing');
     const { width, height } = getDimension(quality);
-    const imageSeq = await getImages(path, width, height, updateText);
+    const imageSeq = await (renderer === RENDERER.CANVAS
+      ? getImages(path, width, height, updateText)
+      : getSvgImages(path, width, height, updateText));
 
     console.timeEnd('capturing');
     output && URL.revokeObjectURL(output);
