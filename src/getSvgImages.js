@@ -46,6 +46,22 @@ function _getSvgImages(path) {
   });
 }
 
+function drawSVG(svg, ctx, x, y, width, height) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const serialized = new XMLSerializer().serializeToString(svg);
+    const url = URL.createObjectURL(
+      new Blob([serialized], { type: 'image/svg+xml' }),
+    );
+    img.onload = function () {
+      console.log('d');
+      ctx.drawImage(img, x, y, width, height);
+      resolve(img);
+    };
+    img.src = url;
+  });
+}
+
 export async function getSvgImages(path, width, height, callback) {
   return new Promise((resolve, reject) => {
     _getSvgImages(path).then(async (svgImages) => {
