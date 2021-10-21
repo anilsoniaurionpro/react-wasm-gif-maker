@@ -1,9 +1,11 @@
+import Lottie from 'lottie-web';
+
 function _getSvgImages(path) {
   return new Promise((resolve, reject) => {
     var images = [];
     const container = document.createElement('div');
 
-    var animation = lottie.loadAnimation({
+    var animation = Lottie.loadAnimation({
       container,
       loop: false,
       autoplay: true,
