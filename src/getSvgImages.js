@@ -78,7 +78,6 @@ export async function getSvgImages(path, width, height, callback) {
       canvas.height = height;
 
       const ctx = canvas.getContext('2d');
-      const images = [];
 
       let gid = null;
       let index = 0;
