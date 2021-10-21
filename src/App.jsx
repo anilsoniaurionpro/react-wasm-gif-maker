@@ -90,7 +90,7 @@ function App() {
   const [renderer, setRenderer] = useState(RENDERER.CANVAS);
 
   const load = async () => {
-    // await ffmpeg.load();
+    await ffmpeg.load();
     setReady(true);
   };
 
