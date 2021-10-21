@@ -1,8 +1,8 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import localforage from 'localforage';
-import Lottie from 'lottie-web';
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
+import { getImages } from './getImages';
 import imageData from './images.json';
 
 const ffmpeg = createFFmpeg({
@@ -20,13 +20,13 @@ localforage.config({
 });
 
 function getFileExtenstionFromUrl(url) {
-  const a = url.split(".");
+  const a = url.split('.');
   return a[a.length - 1];
 }
 
 export function toProxyUrl(url) {
   const path =
-    "https://vidybackapi.herokuapp.com" + "/proxy/" + encodeURIComponent(url);
+    'https://vidybackapi.herokuapp.com' + '/proxy/' + encodeURIComponent(url);
   return path;
 }
 
@@ -53,6 +53,11 @@ const QUALITY = {
   LOW: 'LOW',
   MID: 'MID',
   HIGH: 'HIGH',
+};
+
+const RENDERER = {
+  SVG: 'SVG',
+  CANVAS: 'CANVAS',
 };
 
 function getDimension(quality) {
@@ -82,6 +87,7 @@ function App() {
   const ref = useRef();
   const [cover, setCover] = useState('');
   const [video, setVideo] = useState('');
+  const [renderer, setRenderer] = useState(RENDERER.CANVAS);
 
   const load = async () => {
     await ffmpeg.load();
@@ -98,78 +104,12 @@ function App() {
     }
   }
 
-  function getImages(path, callback) {
-    return new Promise((resolve, reject) => {
-      var canvas = document.createElement('canvas');
-      const { width, height } = getDimension(quality);
-      console.log({width,height});
-      canvas.width = width;
-      canvas.height = height;
-
-      var ctx = canvas.getContext('2d');
-      var images = [];
-
-      var animation = Lottie.loadAnimation({
-        renderer: 'canvas',
-        loop: false,
-        autoplay: true,
-        path: path,
-        rendererSettings: {
-          context: ctx, // the canvas context
-          // scaleMode: "scale",
-          clearCanvas: true,
-          progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
-          hideOnTransparent: true, //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)
-          preserveAspectRatio: 'xMidYMid meet'
-        },
-      });
-      // return;
-      // animation.setSpeed(0.5);
-      // animation.setSubframe(false);
-
-      // animation.addEventListener('enterFrame', function captureFrame(e) {
-      //   console.log('ef');
-      //   // images.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      // });
-
-      // animation.addEventListener('complete', function captureFrame() {
-      //   console.log('completed', images.length);
-      //   resolve(images);
-      // });
-
-      animation.addEventListener('data_ready', function captureFrame() {
-        animation.play();
-        setTimeout(() => {
-          run();
-        }, 3000);
-      });
-
-      function run() {
-        const totalFrames = animation.getDuration(true);
-        for (let index = 0; index < totalFrames; index++) {
-          setTimeout(() => {
-            animation.goToAndStop(index, true);
-            images.push(canvas.toDataURL());
-            console.log('capture');
-          }, 0);
-          setTimeout(() => {
-            callback(index);
-          }, 0);
-        }
-        setTimeout(() => {
-          console.log('completed capturing', images.length);
-          animation.destroy();
-          resolve(images);
-        }, 0);
-      }
-    });
-  }
-
   async function startEncoding() {
     console.time('process');
     setProcessing(true);
     console.time('capturing');
-    const imageSeq = await getImages(path, updateText);
+    const { width, height } = getDimension(quality);
+    const imageSeq = await getImages(path, width, height, updateText);
 
     console.timeEnd('capturing');
     output && URL.revokeObjectURL(output);
@@ -186,10 +126,22 @@ function App() {
     });
 
     // ffmpeg.FS('writeFile', `audio10.mp3`, await fetchFile('audio10.mp3'));
-    var filename = "";
+    var filename = '';
     if (true) {
-      filename = "audio." + getFileExtenstionFromUrl("https://cdn.hootout.com/behtarads/music/vv-template-08-s-02.aac");
-      ffmpeg.FS("writeFile", filename, await fetchFile(toProxyUrl("https://cdn.hootout.com/behtarads/music/vv-template-08-s-02.aac")));
+      filename =
+        'audio.' +
+        getFileExtenstionFromUrl(
+          'https://cdn.hootout.com/behtarads/music/vv-template-08-s-02.aac',
+        );
+      ffmpeg.FS(
+        'writeFile',
+        filename,
+        await fetchFile(
+          toProxyUrl(
+            'https://cdn.hootout.com/behtarads/music/vv-template-08-s-02.aac',
+          ),
+        ),
+      );
     }
     console.timeEnd('writing');
 
@@ -231,10 +183,12 @@ function App() {
       fps,
       '-i',
       'img%05d.png',
-      "-ss" ,"0",
+      '-ss',
+      '0',
       '-i',
       filename,
-      "-t" , "" + (Math.floor(imageSeq.length / fps)),
+      '-t',
+      '' + Math.floor(imageSeq.length / fps),
       '-c:v',
       'libx264',
       '-preset',
@@ -291,13 +245,17 @@ function App() {
 
   return ready ? (
     <div className="App">
-      {cover && video && (
+      {/* {cover && video && (
         <div>
           <img src={cover} alt="cover" />
-          <video controls src={URL.createObjectURL(video)} poster={cover}></video>
+          <video
+            controls
+            src={URL.createObjectURL(video)}
+            poster={cover}
+          ></video>
         </div>
       )}
-      <button onClick={loadCover}>load last saved video</button>
+      <button onClick={loadCover}>load last saved video</button> */}
       <h1>1. Pick lottie animation</h1>
       <h2>Type lottie url</h2>
       <input
@@ -322,7 +280,9 @@ function App() {
       <br />
       <hr />
 
-      <h1>2. Pick quality</h1>
+      <h1>
+        2. Pick quality <code>{getDimension(quality)}</code>
+      </h1>
       <select
         disabled={processing}
         value={quality}
@@ -344,6 +304,21 @@ function App() {
         onChange={(e) => setFps(e.target.value)}
       >
         {['30', '27', '25', '22', '20'].map((item) => (
+          <option value={item} key={item}>
+            {item}
+          </option>
+        ))}
+      </select>
+      <br />
+      <hr />
+
+      <h1>4. Renderer</h1>
+      <select
+        disabled={processing}
+        value={renderer}
+        onChange={(e) => setRenderer(e.target.value)}
+      >
+        {Object.keys(RENDERER).map((item) => (
           <option value={item} key={item}>
             {item}
           </option>
