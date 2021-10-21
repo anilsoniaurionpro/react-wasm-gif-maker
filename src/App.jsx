@@ -90,7 +90,7 @@ function App() {
   const [renderer, setRenderer] = useState(RENDERER.CANVAS);
 
   const load = async () => {
-    await ffmpeg.load();
+    // await ffmpeg.load();
     setReady(true);
   };
 
@@ -281,7 +281,7 @@ function App() {
       <hr />
 
       <h1>
-        2. Pick quality <code>{getDimension(quality)}</code>
+        2. Pick quality</code>
       </h1>
       <select
         disabled={processing}
