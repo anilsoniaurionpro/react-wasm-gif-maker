@@ -60,7 +60,7 @@ function drawSVG(svg, x, y, width, height) {
     img.onload = function () {
       console.log('d');
       canvas.getContext('2d').drawImage(img, x, y, width, height);
-      resolve(img);
+      resolve(canvas.toDataURL());
     };
     img.src = url;
   });
