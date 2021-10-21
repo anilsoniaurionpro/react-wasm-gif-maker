@@ -280,9 +280,7 @@ function App() {
       <br />
       <hr />
 
-      <h1>
-        2. Pick quality</code>
-      </h1>
+      <h1>2. Pick quality</h1>
       <select
         disabled={processing}
         value={quality}
