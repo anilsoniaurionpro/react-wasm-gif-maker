@@ -38,7 +38,7 @@ export function getImages(path, width, height, callback) {
     //   resolve(images);
     // });
 
-    animation.addEventListener('data_ready', function captureFrame() {
+    animation.addEventListener('DOMLoaded', function captureFrame() {
       animation.play();
       setTimeout(() => {
         run();
